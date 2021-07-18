@@ -1,0 +1,23 @@
+<h1>
+    Home
+</h1>
+
+
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Calculate Distance
+{% endblock title %}
+{% block content %}
+{{distance}}
+<hr>
+<form action="" method="POST" autocomplete="off">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary">confirm</button>
+</form>
+<br>
+This product includes GeoLite2 data created by MaxMind, available from
+<a href="https://www.maxmind.com">https://www.maxmind.com</a>.
+{% endblock content %}
