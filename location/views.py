@@ -12,33 +12,33 @@ def calculate_distance_view(request):
     obj = LocationMeasurement.objects.get(id=1)
     form = LocationMeasurementForm(request.POST or None)
 
-    # geopy
+    # GEOPY
     geolocator = Nominatim(user_agent="location")
     ip = '209.95.50.14'
     country, city, lat, lon = get_geo(ip)
-    print('location country', country)
-    print('location city', city)
-    print('location lat lon', lat, lon)
-
-    # will give is name of city from the ip address
     location = geolocator.geocode(city)
-    print('location :::==>>', location)
 
+    # location coordinates
     l_lat = lat
     l_lon = lon
     pointA = (l_lat, l_lon)
+
+    # initial folium map
 
     if form.is_valid():
         instance = form.save(commit=False)
         d_destination = form.cleaned_data.get('destination')
         g_destination = geolocator.geocode(d_destination)
-        print(g_destination)
+
+        # destination coordinates
         d_lat = g_destination.latitude
         d_lon = g_destination.longitude
-
         pointB = (d_lat, d_lon)
+
+        # distance calculation
         distance = round(geodesic(pointA, pointB).km, 2)
 
+        # folium map modification
         instance.user_location = location
         instance.distance = distance
         instance.save()
@@ -49,7 +49,3 @@ def calculate_distance_view(request):
     }
 
     return render(request, 'location/test.html', context)
-
-
-def home(request):
-    return render(request, 'location/test.html')
