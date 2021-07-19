@@ -5,8 +5,12 @@
 Calculate Distance
 {% endblock title %}
 {% block content %}
-{{distance}}
-<hr>
+<div class="container">
+    <h2>Geo-Location</h2>
+    <hr>
+    {{map|safe}}
+</div>
+<h4>Find Distance</h4>
 <form action="" method="POST" autocomplete="off">
     {% csrf_token %}
     {{ form|crispy }}
