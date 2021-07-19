@@ -5,6 +5,26 @@
 Calculate Distance
 {% endblock title %}
 {% block content %}
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"> Distance to {{ destination }} is:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ distance }} km.
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="container">
     <h2>Geo-Location</h2>
     <hr>
@@ -19,4 +39,19 @@ Calculate Distance
 <br>
 This product includes GeoLite2 data created by MaxMind, available from
 <a href="https://www.maxmind.com">https://www.maxmind.com</a>.
+
+
+{% if request.POST and distance is not None %}
+<script>
+    //     $(document).ready(function() {
+    //         $('#menu-button').on('click', () => {
+    //             $('#menu').fadeIn();
+    //         })
+    // });
+    $(window).on('load', function () {
+        $('#exampleModal').modal('show')
+    })
+</script>
+{% endif %}
+
 {% endblock content %}

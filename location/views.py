@@ -1,8 +1,8 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render, HttpResponseRedirect
 # locals
 from . models import LocationMeasurement
 from . forms import LocationMeasurementForm
-from . utils import get_geo, get_center_coordinates, get_zoom
+from . utils import get_geo, get_center_coordinates, get_zoom, get_ip
 # geopy
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
@@ -11,12 +11,16 @@ import folium
 
 
 def calculate_distance_view(request):
-    obj = LocationMeasurement.objects.get(id=1)
+    '''calculate distance between two location'''
+    distance = None
+    destination = None
     form = LocationMeasurementForm(request.POST or None)
-
-    # GEOPY
+    # Geopy
     geolocator = Nominatim(user_agent="location")
-    ip = '72.46.131.10'
+
+    ip_ = get_ip(request)
+    print(ip_)
+    ip = '169.54.70.214'
     country, city, lat, lon = get_geo(ip)
     location = geolocator.geocode(city)
 
@@ -49,23 +53,32 @@ def calculate_distance_view(request):
         m = folium.Map(width=1080, height=640, location=get_center_coordinates(
             l_lat, l_lon, d_lat, d_lon), zoom_start=get_zoom(distance))
         # location marker
-        folium.Marker([l_lat, l_lon], tooltip='click me', popup=city['city'],
-                      icon=folium.Icon(color='red')).add_to(m)
+        folium.Marker([l_lat, l_lon], popup=city['city'],
+                      ).add_to(m)
 
         # destination marker
-        folium.Marker([d_lat, d_lon], tooltip='click me', popup=destination,
+        folium.Marker([d_lat, d_lon], popup=destination,
                       ).add_to(m)
+
+        # Line (draw) between two locations
+        line = folium.PolyLine(
+            locations=[pointA, pointB], weight=2, color='orange')
+        m.add_child(line)
 
         instance.user_location = location
         instance.distance = distance
         instance.save()
 
+    # check if modal is not poping
+    # distance = None
+
     m = m._repr_html_()
 
     context = {
-        'distance': obj,
+        'distance': distance,
         'form': form,
-        'map': m
+        'map': m,
+        'destination': destination
     }
 
     return render(request, 'location/main.html', context)
